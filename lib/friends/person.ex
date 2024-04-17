@@ -1,4 +1,5 @@
 defmodule Friends.Person do
+  require Ecto.Query
   use Ecto.Schema
 
   schema "people" do
@@ -25,5 +26,27 @@ defmodule Friends.Person do
         IO.puts("Failed to create person. Errors: #{inspect(changeset.errors)}")
         {:error, changeset}
     end
+  end
+
+  def get_person(name) do
+    person = Friends.Person |> Ecto.Query.where(first_name: ^name)
+    IO.inspect(person)
+  end
+
+  def update_first_age do
+    person = Friends.Person |> Ecto.Query.first |> Friends.Repo.one
+    IO.puts("Updating #{person.first_name}'s age to 29, he was #{person.age} years old")
+    changeset  = Friends.Person.changeset(person, %{first_name: ""})
+    Friends.Repo.update(changeset)
+  end
+
+  def get_all_people do
+    Friends.Person |> Friends.Repo.all
+  end
+
+  def delete_person(id) do
+    person = Friends.Repo.get(Friends.Person, id)
+    IO.puts("Deleting #{person.first_name} #{person.last_name}")
+    Friends.Repo.delete(person)
   end
 end
